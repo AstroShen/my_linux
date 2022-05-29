@@ -1,0 +1,29 @@
+<archive>
+    <work>    
+        <projects>
+            <project1> </project1>
+        </projects>
+        <document>
+            <environment_config> </environment_config>
+            <software/> 
+        </document>
+    </work>
+    <personal>
+        <material/>
+    </personal>
+    <tmp/>
+    <synchoronize/>
+    <software_paks>
+        <images/>
+        <windows/>
+        <linux/>
+        <mobile/>
+        <games/>
+    </software_paks>
+    <disaster_tolerance/>
+    <media>
+        <pics/>
+        <videos/>
+    </media>
+</archive>
+     

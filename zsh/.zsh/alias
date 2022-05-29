@@ -1,0 +1,137 @@
+# 基本命令参数叠加
+alias mkdir='mkdir -pv'
+alias ls='ls -pG --color=auto'
+alias ping='ping -c 5'
+alias pingb='ping www.baidu.com'
+alias pingg='ping www.google.com'
+alias df='df -Tha --total'
+alias sudo='sudo '
+alias cp='cp -rdp'
+alias cscope='cscope -Rbq'
+alias ctagsC++='ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --language-force=c++'
+# alias tmux='tmux -f $HOME/.config/tmux/.tmux.conf'
+alias rg='rg -S -z --hidden --follow'
+
+
+# 常用操作
+alias ..='cd ..'
+alias v='nvim'
+alias vn='nvim -u NONE'
+alias h='history'
+alias q='exit'
+alias c='clear'
+alias du='du --max-depth=1 -h | sort -hr'
+alias N='sudo -E nnn -dH'
+
+
+# 编辑查找操作
+alias zshconfig='v ~/.zshrc'
+alias lower="tr 'A-Z' 'a-z'"
+alias upper="tr 'a-z' 'A-Z'"
+alias nospace="tr -d ' '"
+alias findf='find . -type f -iname'
+alias findf!='find . -type f ! -iname'
+alias findd='find . -type d -iname'
+alias findd!='find . -type d ! -iname'
+alias find5m='find . -maxdepth 1 -type f -ctime -5'
+
+# 系统相关
+alias cpunum='cat /proc/cpuinfo/ | grep -c processor'
+# alias ipaddr='ifconfig eth0 | grep '\''inet '\'' | sed '\''s/\s\s*/ /g'\'' | cut -d'\'' '\'' -f 3'
+alias ipaddr='hostname -I'
+alias killg='psg vim | sed "s/\s\s*/ /g" | cut -d" " -f2 | xargs kill -9'
+alias now='date "+%Y-%m-%d-%H:%M:%S.%s"'
+alias path='echo -e ${PATH//:/\\n}'
+alias startService='sudo systemctl start '
+alias stopService='sudo systemctl stop '
+alias meminfo='free -m -l -t'
+alias psg='ps -ef | grep -v grep | grep $1'
+alias psme='ps aux | grep -v grep | grep $USER | sort -nr -k 4'
+alias ranPwd='openssl rand -base64 20'
+
+
+# apt软件相关
+alias apt.i='sudo apt install -y '
+alias apt.s='sudo apt-cache search '
+alias apt.u='sudo apt update '
+alias search='sudo apt-cache search '
+alias apt.nstall.basetools='sudo apt install -y build-essential cmake git gdb flex bison valgrind zip vim-nox python3-dev zsh mono-complete npm bzip2 xz-utils tree'
+
+
+# make命令相关
+alias mk='make'
+alias mk4='make -j4'
+alias mk8='make -j8'
+alias mkc='make clean'
+alias cmk='cmake'
+alias mki='make install'
+
+# git 相关
+alias glog='git log --graph --pretty='\''%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset'\'
+alias gloga='git log --graph --pretty='\''%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset'\'
+alias gc='git commit -v -m'
+# alias g='git'
+# alias gl='git clone'
+# alias gfu='git fetch upstream'
+# alias gfo='git fetch origin'
+# alias gr='git rebase'
+# alias gpull='git pull'
+# alias gs='git status'
+# alias gc='git checkout'
+# alias gl="git log --pretty=format:'%Cblue%h%Creset%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset' --abbrev-commit --date=relative"
+# alias gbranches='git branch -a'
+# alias gnb='git checkout -b'
+# alias gnewbranch='git checkout -b'
+# alias grmbranch='git branch -d'
+# alias gd='git diff'
+# alias gss='git stash save'
+# alias gsp='git stash pop'
+# alias gsl='git stash list'
+# alias ga='git add'
+# alias gaa='git add -A'
+# alias gau='git add -u'
+# alias gcom='git commit -m'
+# alias gauc='git add -u && git commit -m'
+# alias gcommend='git add -A && git commit --amend --no-edit'
+# alias gm='git merge'
+# alias gcp='git cherry-pick'
+# alias gpush='git push'
+# alias grom='git rebase origin/master'
+
+# docker 相关
+# enable docker daemon
+alias ddaemon="sudo service docker start"
+# Get images
+alias di="docker images"
+# Get process included stop container
+alias dpa="docker ps -a"
+# Get container process
+alias dps="docker ps"
+# Execute interactive container, e.g., $dex base /bin/bash
+alias dex="docker exec -i -t"
+# Run interactive container, e.g., $dki base /bin/bash
+alias dri="docker run -i -t -P"
+alias dstart='docker start'
+alias dstop='docker stop'
+alias drm='docker rm'
+alias drmi='docker rmi'
+# Stop all containers
+dstopa() { docker stop $(docker ps -a -q); }
+# Remove all containers
+drma() { docker rm $(docker ps -a -q); }
+# Stop and Remove all containers
+alias dstoprma='docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)'
+# Remove all images
+drmia() { docker rmi $(docker images -q); }
+# Bash into running container
+dbash() { docker exec -it $(docker ps -aqf "name=$1") bash; }
+
+# 函数命令
+alias backup='backup'
+alias ct='cleanTrash'
+alias mcd='mcd'
+alias sendto='sendto'
+alias swapFile='swap'
+alias ztar='mktar'
+alias ztbz='mktbz'
+alias ztgz='mktgz'

@@ -1,0 +1,19 @@
+[user]
+	email = 768299856@qq.com
+	name = AstroShen
+[core]
+	editor = nvim
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
+[merge]
+	tool = vimdiff
+  conflictstype = diff3
+[mergetool]
+  cmd = nvim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

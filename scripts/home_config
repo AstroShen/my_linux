@@ -1,0 +1,1 @@
+cp /home/astro/.vimrc /home/astro/.tmux.conf /home/astro/.vim/_vimrc /home/astro/.vim/coc-settings.json /home/astro/.zshrc /home/astro/.oh-my-zsh/custom/alias /home/astro/.oh-my-zsh/custom/functions /home/astro/.gitconfig ~/home_config
