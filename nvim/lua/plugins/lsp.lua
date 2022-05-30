@@ -48,16 +48,25 @@ local lsp_on_attach = function(client, bufnr)
   })
 end
 local lsp_servers = {"clangd", "pylsp", "sumneko_lua", "bashls"}
+local config_dir = vim.fn.stdpath('config')
 for _, server in ipairs(lsp_servers) do
   local cmd
   local rootPatterns
   local flags
   local settings
   if server == 'clangd' then
-    cmd = { "/home/astro/.config/nvim/lsp_servers/clangd/clangd/bin/clangd", "--background-index", "--cross-file-rename", "--header-insertion=never", "--completion-style=detailed", "--header-insertion-decorators=false" }
+    if jit.os == "Linux" then
+      cmd = { config_dir .. "/lsp_servers/clangd/clangd/bin/clangd", "--background-index", "--cross-file-rename", "--header-insertion=never", "--completion-style=detailed", "--header-insertion-decorators=false" }
+    elseif jit.os == "Windows" then
+      cmd = { config_dir .. "\\lsp_servers\\clangd\\clangd\\bin\\clangd.exe", "--background-index", "--cross-file-rename", "--header-insertion=never", "--completion-style=detailed", "--header-insertion-decorators=false" }
+    end
     rootPatterns = { ".git", "compile_flags.txt", "compile_commands.json" }
   elseif server == 'pylsp' then
-    cmd = {'/home/astro/.config/nvim/lsp_servers/pylsp/venv/bin/pylsp'}
+    if jit.os == "Linux" then
+      cmd = {config_dir .. '/lsp_servers/pylsp/venv/bin/pylsp'}
+    elseif jit.os == "Windows" then
+      cmd = {config_dir .. '\\lsp_servers\\pylsp\\venv\\Scripts\\pylsp.exe'}
+    end
     flags = { debounce_text_changes = 150, }
     settings = {
       configurationSources = {"flake8"},
@@ -82,9 +91,13 @@ for _, server in ipairs(lsp_servers) do
       }
     }
   elseif server == 'sumneko_lua' then
-    cmd = { "/home/astro/.config/nvim/lsp_servers/sumneko_lua/extension/server/bin/lua-language-server"}
+    if jit.os == "Linux" then
+      cmd = {config_dir .. "/lsp_servers/sumneko_lua/extension/server/bin/lua-language-server"}
+    elseif jit.os == "Windows" then
+      cmd = {config_dir .. "\\lsp_servers\\sumneko_lua\\extension\\server\\bin\\lua-language-server.exe"}
+    end
   elseif server == 'bashls' then
-    cmd = {"/home/astro/.config/nvim/lsp_servers/bash/node_modules/.bin/bash-language-server"}
+    cmd = {config_dir .. "/lsp_servers/bash/node_modules/.bin/bash-language-server"}
   end
   lspconfig[server].setup {
     cmd = cmd,

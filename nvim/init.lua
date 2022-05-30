@@ -67,8 +67,7 @@ local plugins = {
   {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
 
   -- UI
-  {"mcchrish/zenbones.nvim", requires = "rktjmp/lush.nvim"},
-  {'olimorris/onedarkpro.nvim'},
+  {'navarasu/onedark.nvim'},
   {'kyazdani42/nvim-web-devicons'},
   {'nvim-lualine/lualine.nvim'},
   {'kyazdani42/nvim-tree.lua'},
@@ -80,7 +79,6 @@ local plugins = {
   { 'numToStr/Comment.nvim', },
   {'windwp/nvim-autopairs'},
   {'machakann/vim-sandwich'},
-  -- {'wellle/targets.vim', enable = false},
 
   -- work_flow
   {"akinsho/toggleterm.nvim", },
@@ -88,8 +86,6 @@ local plugins = {
   { "aserowy/tmux.nvim", },
   {'sakhnik/nvim-gdb', run = './install.sh' },
   {'sudormrfbin/cheatsheet.nvim'},
-  {'ldelossa/litee.nvim'},
-  {'ldelossa/litee-calltree.nvim'},
 
   -- utility
   {'folke/which-key.nvim', },
@@ -135,8 +131,6 @@ end)
 ----------------------------------------
 -- Load modules
 ----------------------------------------
-vim.cmd("source ~/.config/nvim/plugin/packer_compiled.lua")
--- print(vim.inspect(packer_plugins))
 require("options")
 require("plugins")
 require("mappings")

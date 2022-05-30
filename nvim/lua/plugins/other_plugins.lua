@@ -1,30 +1,43 @@
--- my favorite onedark theme
-local onedarkpro = require("onedarkpro")
-onedarkpro.setup({
-  -- colors = {#56b6c2 #98c379 , #c678dd, #e5c07b, #61afef}, -- Override default colors by specifying colors for 'onelight' or 'onedark' themes
-  hlgroups = {
-    MatchParen = {bg = "gray"},
-    TSString = {fg = "#32CD99"},
-    String = {fg = "#32CD99" },
-    LspSignatureActiveParameter = {fg = "#c678dd"}, -- used by lsp_signature
-    QuickFixLine = {bg = "#53565D"}
-  }, -- Override default highlight groups
-  styles = {
-    strings = "italic", -- Style that is applied to strings
-    comments = "italic", -- Style that is applied to comments
-    keywords = "NONE", -- Style that is applied to keywords
-    functions = "bold", -- Style that is applied to functions
-    variables = "NONE", -- Style that is applied to variables
-    virtual_text = "NONE", -- Style that is applied to virtual text
-  },
-  options = {
-    cursorline = true, -- Use cursorline highlighting?
-    transparency = false, -- Use a transparent background?
-    terminal_colors = true, -- Use the theme's colors for Neovim's :terminal?
-    window_unfocussed_color = true, -- When the window is out of focus, change the normal background?
-  }
-})
-onedarkpro.load()
+require('onedark').setup  {
+    -- Main options --
+    style = 'dark', -- Default theme style. Choose between 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer' and 'light'
+    transparent = false,  -- Show/hide background
+    term_colors = true, -- Change terminal color as per the selected theme style
+    ending_tildes = false, -- Show the end-of-buffer tildes. By default they are hidden
+    cmp_itemkind_reverse = false, -- reverse item kind highlights in cmp menu
+    -- toggle theme style ---
+    toggle_style_key = '<leader>ts', -- Default keybinding to toggle
+    toggle_style_list = {'dark', 'darker', 'cool', 'deep', 'warm', 'warmer', 'light'}, -- List of styles to toggle between
+
+    -- Change code style ---
+    -- Options are italic, bold, underline, none
+    -- You can configure multiple style with comma seperated, For e.g., keywords = 'italic,bold'
+    code_style = {
+        comments = 'italic',
+        keywords = 'none',
+        functions = 'none',
+        strings = 'italic',
+        variables = 'none'
+    },
+
+    -- Custom Highlights --
+    colors = {}, -- Override default colors
+    highlights = {
+      MatchParen = {bg = "gray"},
+      TSString = {fg = "#32CD99"},
+      String = {fg = "#32CD99" },
+      LspSignatureActiveParameter = {fg = "#c678dd"}, -- used by lsp_signature
+      QuickFixLine = {bg = "#53565D"}
+    }, -- Override highlight groups
+
+    -- Plugins Config --
+    diagnostics = {
+        darker = true, -- darker colors for diagnostic
+        undercurl = true,   -- use undercurl instead of underline for diagnostics
+        background = true,    -- use background color for virtual text
+    },
+}
+require('onedark').load()
 
 -- simple configurations of plugins
 require("Comment").setup() -- Comment
@@ -112,7 +125,7 @@ require'nvim-tree'.setup({
 
 -- auto-session
 require('auto-session').setup {
-  auto_session_root_dir = '/home/astro/.tmp/vim_sessions/',
+  auto_session_root_dir = vim.fn.expand('~') .. '/.tmp/vim_sessions/',
   auto_save_enabled = false,
   auto_restore_enabled = true,
 }
@@ -191,11 +204,3 @@ require('accelerated-jk').setup {
 require("which-key").setup{
   window = {border = "single"}
 }
-
--- litee
--- configure the litee.nvim library 
-require('litee.lib').setup({})
--- configure litee-calltree.nvim
-require('litee.calltree').setup({
-  on_open = "popout",
-})

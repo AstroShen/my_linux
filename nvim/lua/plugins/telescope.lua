@@ -21,8 +21,8 @@ require('telescope').setup{
   },
   pickers = {
     find_files = {
-      find_command = {"fd", "--type", "f"},
-      hidden = false,
+      find_command = {"fd", "--type", "f"}, -- linux only option
+      hidden = false, -- linux only option
       mappings = {
         n = {
           ["cd"] = function(prompt_bufnr)
@@ -47,7 +47,7 @@ require('telescope').setup{
     },
   },
   extensions = {
-    fzf = {
+    fzf = { -- linux only option
       fuzzy = true,                    -- false will only do exact matching
       override_generic_sorter = true,  -- override the generic sorter
       override_file_sorter = true,     -- override the file sorter
@@ -57,4 +57,6 @@ require('telescope').setup{
   }
 }
 -- load_extension
-require('telescope').load_extension('fzf')
+if jit.os == "Linux" then
+  require('telescope').load_extension('fzf')
+end

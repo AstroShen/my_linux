@@ -49,4 +49,4 @@ if has("persistent_undo")
       let &dir=swap_target_path
       endif
       ]])
-
+vim.opt.guifont = "Hack NF:h15"
