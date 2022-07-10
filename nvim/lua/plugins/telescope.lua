@@ -15,7 +15,8 @@ require('telescope').setup{
         ["<C-s>"] = "select_horizontal",
         ["<esc>"] = "close",
         ["<C-u>"] = false,
-        ["<M-p>"] = require("telescope.actions.layout").toggle_preview
+        ["<M-p>"] = require("telescope.actions.layout").toggle_preview,
+        ["<M-n>"] = require('telescope.actions').edit_search_line,
       },
     }
   },

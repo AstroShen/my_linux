@@ -18,7 +18,7 @@ local source_mapping = {
 }
 cmp.setup({
   completion = {
-    keyword_length = 3,
+    keyword_length = 2,
   },
   view = {
     entries = {name = 'custom', selection_order = 'near_cursor' } 

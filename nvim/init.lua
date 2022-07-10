@@ -42,6 +42,12 @@ local plugins = {
   {'folke/trouble.nvim'},
   {'RRethy/vim-illuminate'},
   {'ray-x/lsp_signature.nvim'},
+  { 'ray-x/navigator.lua',
+    requires = {
+      { 'ray-x/guihua.lua', run = 'cd lua/fzy && make' },
+      { 'neovim/nvim-lspconfig' },
+    },
+  },
 
   -- completion
   {'hrsh7th/cmp-nvim-lsp'},
@@ -82,7 +88,6 @@ local plugins = {
 
   -- work_flow
   {"akinsho/toggleterm.nvim", },
-  { 'lewis6991/gitsigns.nvim', },
   { "aserowy/tmux.nvim", },
   {'sakhnik/nvim-gdb', run = './install.sh' },
   {'sudormrfbin/cheatsheet.nvim'},
@@ -98,7 +103,13 @@ local plugins = {
   {'xiyaowong/accelerated-jk.nvim'},
   { "folke/todo-comments.nvim"},
   {'edluffy/specs.nvim'},
+  {'rcarriga/nvim-notify'},
+  {"ahmedkhalf/project.nvim"},
+
+  -- git
   {'rhysd/conflict-marker.vim'},
+  { 'lewis6991/gitsigns.nvim', },
+  { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' },
 }
 
 packer.init {

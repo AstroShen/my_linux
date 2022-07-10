@@ -241,17 +241,21 @@ local snippets = {
     "func",
     fmt([[
     // {1}
+    // pre-conditions: {2}
+    // post-conditions: {3}
     {a}
-    {2} {3}({4}) {{
-      {5}
+    {4} {5}({6}) {{
+      {7}
     }}
     ]],{
       i(1, "Function Description"),
-      a = d(5, function_comment, {4}),
-      i(2, "Type"),
-      i(3, "Function"),
-      i(4, "variables,..."),
-      i(6)
+      a = d(7, function_comment, {6}),
+      i(2),
+      i(3),
+      i(4, "Type"),
+      i(5, "Function"),
+      i(6, "variables,..."),
+      i(8)
     })
     ),
     s(
@@ -371,7 +375,7 @@ local snippets = {
       ),
 
       -- When regTrig is set, trig is treated like a pattern, this snippet will expand after any number.
-      ls.parser.parse_snippet({ trig = "%d", regTrig = true }, "A Number!!"),
+      -- ls.parser.parse_snippet({ trig = "%d", regTrig = true }, "A Number!!"),
       -- Using the condition, it's possible to allow expansion only in specific cases.
       s("cond", {
         t("will only expand in c-style comments"),

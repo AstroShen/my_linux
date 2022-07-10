@@ -1,7 +1,7 @@
 -- treesitter
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {'c', 'cpp', 'python', 'bash', 'verilog', 'lua'},
-  sync_installed = false,
+  sync_installed = true,
   highlight = {
     enable = true,
     use_languagetree = true,

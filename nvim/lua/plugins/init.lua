@@ -1,5 +1,5 @@
 require("plugins.lsp")
 require("plugins.telescope")
 require("plugins.nvim_cmp")
--- require("plugins.treesitter")
+require("plugins.treesitter")
 require("plugins.other_plugins")

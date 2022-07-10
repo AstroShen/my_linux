@@ -8,8 +8,8 @@ vim.g.maplocalleader = " "
 
 -- local map = vim.api.nvim_set_keymap
 local map = vim.keymap.set
-local opt = {noremap = true, silent = true }
-local nsopt = {noremap = true, silent = false }
+local opt = { noremap = true, silent = true }
+local nsopt = { noremap = true, silent = false }
 
 -- mostly used
 map("i", "<A-j>", "<esc>", opt)
@@ -41,6 +41,7 @@ local function toggleTheme()
     vim.o.background = "dark"
   end
 end
+
 map('n', '<leader>tt', ':lua toggleTheme()<cr>', opt)
 map('n', '<leader>rm', ':!rm -r ~/.tmp/vim_swap/.* ~/.tmp/vim_swap/*<cr>', opt)
 map('n', '<leader>gi', '2g;a', opt)
@@ -78,6 +79,21 @@ function _G.Run()
   end
 end
 
+-- quickly jump to end of line, adding endof char conditionally
+function goto_end_of_line()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local current_line = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
+  if vim.o.filetype == 'cpp' or vim.o.filetype == 'c' then
+    if string.sub(current_line, -string.len(";")) ~= ";" then
+      current_line = current_line .. ";"
+      vim.api.nvim_set_current_line(current_line)
+    end
+  end
+  vim.api.nvim_win_set_cursor(0, { line, #current_line })
+end
+
+vim.keymap.set('i', '<C-l>', goto_end_of_line, { noremap = true, silent = true, buffer = true })
+
 -- quickfix
 map('n', '<leader>m', ':update<cr>:make<cr>', opt)
 map("n", "<leader>cw", ":copen 10<cr>", opt)
@@ -94,101 +110,111 @@ map('o', 'na', ':normal! f<vi<<cr>', opt)
 map('o', "n'", ":normal! f'vi'<cr>", opt)
 map('o', 'n"', ':normal! f"vi"<cr>', opt)
 
+-- search visually selected text
+vim.api.nvim_exec(
+  [[
+function! g:VSetSearch(cmdtype)
+let temp = @s
+norm! gv"sy
+let @/ = '\V' . substitute(escape(@s, a:cmdtype.'\'), '\n', '\\n', 'g')
+let @s = temp
+endfunction
+
+xnoremap * :<C-u>call g:VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call g:VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
+]] ,
+  false
+)
+
 -- plugin mappings
 ----------------------
 --if utils.is_available("nvim-tree.lua") then
-  map('n', '<F1>', ':NvimTreeToggle<CR>', opt)
+map('n', '<F1>', ':NvimTreeToggle<CR>', opt)
 --end
 --if utils.is_available("nnn.vim") then
-  map('n', '<F2>', ':NnnPicker %:p:h<CR>', opt)
+map('n', '<F2>', ':NnnPicker %:p:h<CR>', opt)
 --end
 --if utils.is_available("aerial.nvim") then
-  map('n', '<F3>', ':AerialToggle!<CR>', opt)
+map('n', '<F3>', ':AerialToggle!<CR>', opt)
 --end
 --if utils.is_available("undotree") then
-  map('n', '<F4>', ':UndotreeToggle<CR>', opt)
+map('n', '<F4>', ':UndotreeToggle<CR>', opt)
 --end
 --if utils.is_available("telescope.nvim") then
-  map("n", "<leader>fr", "<cmd>Telescope resume<cr>", opt)
-  map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", opt)
-  map("n", "<leader>fF", ":lua require'telescope.builtin'.find_files({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-  map("n", "<leader>sh", "<cmd>Telescope search_history<cr>", opt)
-  map("n", "<leader>b", "<cmd>Telescope buffers<cr>", opt)
-  map("n", "<leader>fo", "<cmd>Telescope oldfiles<cr>", opt)
-  map("n", "<leader>ts", "<cmd>Telescope treesitter<cr>", opt)
-  map("n", "<C-f>", "<cmd>Telescope current_buffer_fuzzy_find<cr>", opt)
-  map("n", "<leader>lg", "<cmd>Telescope live_grep<cr>", opt)
-  map("n", "<leader>lG", ":lua require'telescope.builtin'.live_grep({grep_open_files = true})<cr>", opt)
-  map("n", "<leader>gp", "<cmd>Telescope grep_string<cr>", opt)
-  map("n", "<leader>ch", "<cmd>Telescope command_history<cr>", opt)
-  map("n", "<leader>k", "<cmd>Telescope keymaps<cr>", opt)
-  map("n", "<leader>ht", "<cmd>Telescope help_tags<cr>", opt)
-  map("n", "<leader>hl", "<cmd>Telescope highlights<cr>", opt)
-  map("n", "<leader>j", "<cmd>Telescope jumplist<cr>", opt)
-  map("n", "<leader>gf", ":lua require'telescope.builtin'.git_files({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-  map("n", "<leader>gc", ":lua require'telescope.builtin'.git_commits({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-  map("n", "<leader>gs", ":lua require'telescope.builtin'.git_status({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-  map("n", "<leader>gb", ":lua require'telescope.builtin'.git_branches({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
+map("n", "<leader>fr", "<cmd>Telescope resume<cr>", opt)
+map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", opt)
+map("n", "<leader>fF", ":lua require'telescope.builtin'.find_files({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
+map("n", "<leader>sh", "<cmd>Telescope search_history<cr>", opt)
+map("n", "<leader>b", "<cmd>Telescope buffers<cr>", opt)
+map("n", "<leader>fo", "<cmd>Telescope oldfiles<cr>", opt)
+map("n", "<leader>ts", "<cmd>Telescope treesitter<cr>", opt)
+map("n", "<C-f>", "<cmd>Telescope current_buffer_fuzzy_find<cr>", opt)
+map("n", "<leader>lG", ":lua require'telescope.builtin'.live_grep({grep_open_files = true})<cr>", opt)
+map("n", "<leader>lg", ":lua require'telescope.builtin'.live_grep({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
+map("n", "<leader>gp", "<cmd>Telescope grep_string<cr>", opt)
+map("n", "<leader>ch", "<cmd>Telescope command_history<cr>", opt)
+map("n", "<leader>k", "<cmd>Telescope keymaps<cr>", opt)
+map("n", "<leader>ht", "<cmd>Telescope help_tags<cr>", opt)
+map("n", "<leader>hl", "<cmd>Telescope highlights<cr>", opt)
+map("n", "<leader>j", "<cmd>Telescope jumplist<cr>", opt)
+map("n", "<leader>gf", ":lua require'telescope.builtin'.git_files({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
+map("n", "<leader>gc", ":lua require'telescope.builtin'.git_commits({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
+map("n", "<leader>gs", ":lua require'telescope.builtin'.git_status({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
+map("n", "<leader>gb", ":lua require'telescope.builtin'.git_branches({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
 
 --end
 
---if utils.is_available("trouble.nvim") then
-  map("n", "gr", "<cmd>Trouble lsp_references<cr>", opt)
-  map("n", "gT", "<cmd>Trouble workspace_diagnostics<cr>", opt)
-  map("n", "gt", "<cmd>Trouble document_diagnostics<cr>", opt)
-  map('n', 'gD', '<cmd>Trouble lsp_implementations<CR>', opt)
---end
 
 --if utils.is_available("barbar.nvim") then
-  map("n", "<S-TAB>", ":BufferPrevious<CR>", opt)
-  map("n", "<TAB>", ":BufferNext<CR>", opt)
-  map("n", "<leader>q", ":BufferClose<CR>", opt)
-  map("n", "<leader>Q", ":BufferCloseAllButCurrent<CR>", opt)
-  map("n", "<leader>1", ":BufferGoto 1<CR>", opt)
-  map("n", "<leader>2", ":BufferGoto 2<CR>", opt)
-  map("n", "<leader>3", ":BufferGoto 3<CR>", opt)
-  map("n", "<leader>4", ":BufferGoto 4<CR>", opt)
-  map("n", "<leader>5", ":BufferGoto 5<CR>", opt)
-  map("n", "<leader>6", ":BufferGoto 6<CR>", opt)
-  map("n", "<leader>7", ":BufferGoto 7<CR>", opt)
-  map("n", "<leader>8", ":BufferGoto 8<CR>", opt)
-  map("n", "<leader>9", ":BufferGoto 9<CR>", opt)
-  map("n", "<leader>0", ":BufferGoto 10<CR>", opt)
+map("n", "<S-TAB>", ":BufferPrevious<CR>", opt)
+map("n", "<TAB>", ":BufferNext<CR>", opt)
+map("n", "<leader>q", ":BufferClose<CR>", opt)
+map("n", "<leader>Q", ":BufferCloseAllButCurrent<CR>", opt)
+map("n", "<leader>1", ":BufferGoto 1<CR>", opt)
+map("n", "<leader>2", ":BufferGoto 2<CR>", opt)
+map("n", "<leader>3", ":BufferGoto 3<CR>", opt)
+map("n", "<leader>4", ":BufferGoto 4<CR>", opt)
+map("n", "<leader>5", ":BufferGoto 5<CR>", opt)
+map("n", "<leader>6", ":BufferGoto 6<CR>", opt)
+map("n", "<leader>7", ":BufferGoto 7<CR>", opt)
+map("n", "<leader>8", ":BufferGoto 8<CR>", opt)
+map("n", "<leader>9", ":BufferGoto 9<CR>", opt)
+map("n", "<leader>0", ":BufferGoto 10<CR>", opt)
 --end
 
 --if utils.is_available("specs.nvim") then
-  map('n', 'n', 'n:lua require("specs").show_specs()<CR>', opt)
-  map('n', 'N', 'N:lua require("specs").show_specs()<CR>', opt)
+map('n', 'n', 'n:lua require("specs").show_specs()<CR>', opt)
+map('n', 'N', 'N:lua require("specs").show_specs()<CR>', opt)
 --end
 
 --if utils.is_available("dial.nvim") then
-  map("n", "<C-a>", require("dial.map").inc_normal(), {noremap = true})
-  map("n", "<C-x>", require("dial.map").dec_normal(), {noremap = true})
-  map("v", "<C-a>", require("dial.map").inc_visual(), {noremap = true})
-  map("v", "<C-x>", require("dial.map").dec_visual(), {noremap = true})
-  map("v", "g<C-a>", require("dial.map").inc_gvisual(), {noremap = true})
-  map("v", "g<C-x>", require("dial.map").dec_gvisual(), {noremap = true})
+map("n", "<C-a>", require("dial.map").inc_normal(), { noremap = true })
+map("n", "<C-x>", require("dial.map").dec_normal(), { noremap = true })
+map("v", "<C-a>", require("dial.map").inc_visual(), { noremap = true })
+map("v", "<C-x>", require("dial.map").dec_visual(), { noremap = true })
+map("v", "g<C-a>", require("dial.map").inc_gvisual(), { noremap = true })
+map("v", "g<C-x>", require("dial.map").dec_gvisual(), { noremap = true })
 --end
 
 --if utils.is_available("auto-session") then
-  map("n", "<leader>ss", ':SaveSession<cr>', opt)
-  map("n", "<leader>ds", '<Cmd>execute ":DeleteSession "..getcwd()<cr>', opt)
+map("n", "<leader>ss", ':SaveSession<cr>', opt)
+map("n", "<leader>ds", ':DeleteSession<cr>', opt)
 --end
 
-  -- Cheatsheet
-  map("n", "<leader><leader>c", ':Cheatsheet<cr>', opt)
-  map("n", "<leader><leader>C", ':CheatsheetEdit<cr>', opt)
+-- Cheatsheet
+map("n", "<leader><leader>c", ':Cheatsheet<cr>', opt)
+map("n", "<leader><leader>C", ':CheatsheetEdit<cr>', opt)
 
-  -- luasnip
-  map({"i", "s"}, "<c-k>", function ()
-    if require("luasnip").expand_or_jumpable() then
-      require("luasnip").expand_or_jump()
-    end
-  end, opt)
-  map({"i", "s"}, "<c-j>", function ()
-    if require("luasnip").jumpable(-1) then
-      require("luasnip").jump(-1)
-    end
-  end, opt)
+-- luasnip
+map({ "i", "s" }, "<c-k>", function()
+  if require("luasnip").expand_or_jumpable() then
+    require("luasnip").expand_or_jump()
+  end
+end, opt)
+map({ "i", "s" }, "<c-j>", function()
+  if require("luasnip").jumpable(-1) then
+    require("luasnip").jump(-1)
+  end
+end, opt)
 
 return M
