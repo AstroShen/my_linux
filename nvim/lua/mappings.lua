@@ -1,71 +1,8 @@
 local M = {}
-local utils = require("utils")
 
--- builting mappings
---------------------
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
--- local map = vim.api.nvim_set_keymap
-local map = vim.keymap.set
-local opt = { noremap = true, silent = true }
-local nsopt = { noremap = true, silent = false }
-
--- mostly used
-map("i", "<A-j>", "<esc>", opt)
-map("n", ";", ":", nsopt)
-map("n", "Y", "y$", opt)
-map("n", "vv", "^vg_", opt)
-map("n", "<leader>rc", ":e $MYVIMRC<cr>", opt)
-map("n", "<leader>w", ":w<cr>", opt)
-map("n", "<leader>cd", ":cd %:p:h<cr>:pwd<cr>", nsopt)
-map("n", "<leader>dc", ":cd -<cr>", nsopt)
-map("n", "#", "#zz", opt)
-map("n", "*", "*zz", opt)
-map("c", "<C-a>", "<Home>", nsopt)
-map("c", "<C-e>", "<End>", opt)
-map("i", "<A-e>", "<C-o>A", opt)
-map("i", "<A-l>", "<right>", opt)
-map("i", "<A-h>", "<left>", opt)
-map("i", "<A-k>", "<esc>A", opt)
-map("n", "<C-u>", "8k", opt)
-map("n", "<C-d>", "8j", opt)
-map("n", "<esc><esc>", ":noh<cr>", opt)
-map('v', '<', '<gv', opt)
-map('v', '>', '>gv', opt)
-map('n', 'qw', '<c-w>q', opt)
-local function toggleTheme()
-  if vim.o.background == "dark" then
-    vim.o.background = "light"
-  else
-    vim.o.background = "dark"
-  end
-end
-
-map('n', '<leader>tt', ':lua toggleTheme()<cr>', opt)
-map('n', '<leader>rm', ':!rm -r ~/.tmp/vim_swap/.* ~/.tmp/vim_swap/*<cr>', opt)
-map('n', '<leader>gi', '2g;a', opt)
-map('n', 'gV', '`[v`]', opt)
-map('n', '<leader>sr', ':source $MYVIMRC<cr>', opt)
-
--- windows motion, note: this is conflict with tmux plugin map settings
--- map("n", "<C-h>", "<C-w>h", opt)
--- map("n", "<C-j>", "<C-w>j", opt)
--- map("n", "<C-k>", "<C-w>k", opt)
--- map("n", "<C-l>", "<C-w>l", opt)
-map("n", "<C-p>", "<C-w>p", opt)
-
--- terminal motion mappings
-map('t', '<esc>', [[<C-\><C-n>]], opt)
-map('t', '<A-j>', [[<C-\><C-n>]], opt)
-map('t', '<C-h>', [[<C-\><C-n><C-W>h]], opt)
-map('t', '<C-j>', [[<C-\><C-n><C-W>j]], opt)
-map('t', '<C-k>', [[<C-\><C-n><C-W>k]], opt)
-map('t', '<C-l>', [[<C-\><C-n><C-W>l]], opt)
-
+-- useful functions for mappings
 -- build and run
-map('n', '<F5>', ':lua Run()<cr>', opt)
-function _G.Run()
+function M.Run()
   local file_type = vim.o.filetype
   if file_type == 'cpp' then
     -- vim.api.nvim_command("!g++ -std=c++11 -g -Wall %:p -o %:p:r")
@@ -80,8 +17,8 @@ function _G.Run()
 end
 
 -- quickly jump to end of line, adding endof char conditionally
-function goto_end_of_line()
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+function M.goto_end_of_line()
+  local line, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local current_line = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
   if vim.o.filetype == 'cpp' or vim.o.filetype == 'c' then
     if string.sub(current_line, -string.len(";")) ~= ";" then
@@ -91,24 +28,6 @@ function goto_end_of_line()
   end
   vim.api.nvim_win_set_cursor(0, { line, #current_line })
 end
-
-vim.keymap.set('i', '<C-l>', goto_end_of_line, { noremap = true, silent = true, buffer = true })
-
--- quickfix
-map('n', '<leader>m', ':update<cr>:make<cr>', opt)
-map("n", "<leader>cw", ":copen 10<cr>", opt)
-map("n", "<leader>cc", ":ccl<cr>", opt)
-map("n", "<leader>cn", ":cn<cr>", opt)
-map("n", "<leader>cp", ":cp<cr>", opt)
-
--- operator pending mappings
-map('o', 'F', ':<C-U>normal! 0f(hviw<cr>', opt) -- Function name
-map('o', 'np', ':normal! f(vi(<cr>', opt)
-map('o', 'ns', ':normal! f[vi[<cr>', opt)
-map('o', 'nc', ':normal! f{vi{<cr>', opt)
-map('o', 'na', ':normal! f<vi<<cr>', opt)
-map('o', "n'", ":normal! f'vi'<cr>", opt)
-map('o', 'n"', ':normal! f"vi"<cr>', opt)
 
 -- search visually selected text
 vim.api.nvim_exec(
@@ -126,95 +45,171 @@ xnoremap # :<C-u>call g:VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
   false
 )
 
--- plugin mappings
-----------------------
---if utils.is_available("nvim-tree.lua") then
-map('n', '<F1>', ':NvimTreeToggle<CR>', opt)
---end
---if utils.is_available("nnn.vim") then
-map('n', '<F2>', ':NnnPicker %:p:h<CR>', opt)
---end
---if utils.is_available("aerial.nvim") then
-map('n', '<F3>', ':AerialToggle!<CR>', opt)
---end
---if utils.is_available("undotree") then
-map('n', '<F4>', ':UndotreeToggle<CR>', opt)
---end
---if utils.is_available("telescope.nvim") then
-map("n", "<leader>fr", "<cmd>Telescope resume<cr>", opt)
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", opt)
-map("n", "<leader>fF", ":lua require'telescope.builtin'.find_files({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-map("n", "<leader>sh", "<cmd>Telescope search_history<cr>", opt)
-map("n", "<leader>b", "<cmd>Telescope buffers<cr>", opt)
-map("n", "<leader>fo", "<cmd>Telescope oldfiles<cr>", opt)
-map("n", "<leader>ts", "<cmd>Telescope treesitter<cr>", opt)
-map("n", "<C-f>", "<cmd>Telescope current_buffer_fuzzy_find<cr>", opt)
-map("n", "<leader>lG", ":lua require'telescope.builtin'.live_grep({grep_open_files = true})<cr>", opt)
-map("n", "<leader>lg", ":lua require'telescope.builtin'.live_grep({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-map("n", "<leader>gp", "<cmd>Telescope grep_string<cr>", opt)
-map("n", "<leader>ch", "<cmd>Telescope command_history<cr>", opt)
-map("n", "<leader>k", "<cmd>Telescope keymaps<cr>", opt)
-map("n", "<leader>ht", "<cmd>Telescope help_tags<cr>", opt)
-map("n", "<leader>hl", "<cmd>Telescope highlights<cr>", opt)
-map("n", "<leader>j", "<cmd>Telescope jumplist<cr>", opt)
-map("n", "<leader>gf", ":lua require'telescope.builtin'.git_files({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-map("n", "<leader>gc", ":lua require'telescope.builtin'.git_commits({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-map("n", "<leader>gs", ":lua require'telescope.builtin'.git_status({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
-map("n", "<leader>gb", ":lua require'telescope.builtin'.git_branches({cwd = vim.fn.expand('%:p:h')})<cr>", opt)
+-- default mappings
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
---end
+local generic_opts_any = { noremap = true, silent = false }
 
+local generic_opts = {
+  insert_mode = generic_opts_any,
+  normal_mode = generic_opts_any,
+  visual_mode = generic_opts_any,
+  visual_block_mode = generic_opts_any,
+  command_mode = generic_opts_any,
+  operator_mode = generic_opts_any,
+  term_mode = { silent = true },
+}
 
---if utils.is_available("barbar.nvim") then
-map("n", "<S-TAB>", ":BufferPrevious<CR>", opt)
-map("n", "<TAB>", ":BufferNext<CR>", opt)
-map("n", "<leader>q", ":BufferClose<CR>", opt)
-map("n", "<leader>Q", ":BufferCloseAllButCurrent<CR>", opt)
-map("n", "<leader>1", ":BufferGoto 1<CR>", opt)
-map("n", "<leader>2", ":BufferGoto 2<CR>", opt)
-map("n", "<leader>3", ":BufferGoto 3<CR>", opt)
-map("n", "<leader>4", ":BufferGoto 4<CR>", opt)
-map("n", "<leader>5", ":BufferGoto 5<CR>", opt)
-map("n", "<leader>6", ":BufferGoto 6<CR>", opt)
-map("n", "<leader>7", ":BufferGoto 7<CR>", opt)
-map("n", "<leader>8", ":BufferGoto 8<CR>", opt)
-map("n", "<leader>9", ":BufferGoto 9<CR>", opt)
-map("n", "<leader>0", ":BufferGoto 10<CR>", opt)
---end
+local mode_adapters = {
+  insert_mode = "i",
+  normal_mode = "n",
+  term_mode = "t",
+  visual_mode = "v",
+  visual_block_mode = "x",
+  command_mode = "c",
+  operator_mode = "o",
+}
 
---if utils.is_available("specs.nvim") then
-map('n', 'n', 'n:lua require("specs").show_specs()<CR>', opt)
-map('n', 'N', 'N:lua require("specs").show_specs()<CR>', opt)
---end
+-- builting mappings
+--------------------
+local builtins = {
+  insert_mode = {
+    ["<A-j>"] = "<esc>",
+    ["<A-e>"] = M.goto_end_of_line,
+    ["<A-l>"] = "<right>",
+    ["<A-h>"] = "<left>",
+    ["<A-k>"] = "<down><C-o>A",
+  },
+  normal_mode = {
+    [";"] = ":",
+    ["Y"] = "y$",
+    ["vv"] = "^vg_",
+    ["<leader>rc"] = ":e $MYVIMRC<cr>",
+    ["<leader>w"] = ":update<cr>",
+    ["<leader>cd"] = ":cd %:p:h<cr>:pwd<cr>",
+    ["<leader>dc"] = ":cd -<cr>",
+    ["#"] = "#zz",
+    ["*"] = "*zz",
+    ["<C-u>"] = "8k",
+    ["<C-d>"] = "8j",
+    ["<esc><esc>"] = ":noh<cr>",
+    ["qw"] = "<c-w>q",
+    ["<leader>gi"] = "2g;a",
+    ["gV"] = "`[v`]",
+    ["p"] = "pgV=<cr>",
+    -- windows navigation
+    ["<C-h>"] = "<c-w>h",
+    ["<C-j>"] = "<c-w>j",
+    ["<C-k>"] = "<c-w>k",
+    ["<C-l>"] = "<c-w>l",
+    ["<C-p>"] = "<c-w>p",
+    -- quickfix
+    ["<leader>m"] = ":update<cr>:make<cr>",
+    ["<leader>cw"] = ":copen 10<cr>",
+    ["<leader>cc"] = ":ccl<cr>",
+    ["<leader>cn"] = ":cn<cr>",
+    ["<leader>cp"] = ":cp<cr>",
+  },
+  term_mode = {
+    ['<esc>'] = [[<C-\><C-n>]],
+    ['<A-j>'] = [[<C-\><C-n>]],
+    ['<C-h>'] = [[<C-\><C-n><C-W>h]],
+    ['<C-j>'] = [[<C-\><C-n><C-W>j]],
+    ['<C-k>'] = [[<C-\><C-n><C-W>k]],
+    ['<C-l>'] = [[<C-\><C-n><C-W>l]],
+  },
+  visual_mode = {
+    ["<"] = "<gv",
+    [">"] = ">gv",
 
---if utils.is_available("dial.nvim") then
-map("n", "<C-a>", require("dial.map").inc_normal(), { noremap = true })
-map("n", "<C-x>", require("dial.map").dec_normal(), { noremap = true })
-map("v", "<C-a>", require("dial.map").inc_visual(), { noremap = true })
-map("v", "<C-x>", require("dial.map").dec_visual(), { noremap = true })
-map("v", "g<C-a>", require("dial.map").inc_gvisual(), { noremap = true })
-map("v", "g<C-x>", require("dial.map").dec_gvisual(), { noremap = true })
---end
+  },
+  visual_block_mode = {
 
---if utils.is_available("auto-session") then
-map("n", "<leader>ss", ':SaveSession<cr>', opt)
-map("n", "<leader>ds", ':DeleteSession<cr>', opt)
---end
+  },
+  command_mode = {
+    ["<C-a>"] = "<HOME>",
+    ["<C-e>"] = "<END>",
+  },
+  operator_mode = {
+    ['F']  = ':<C-U>normal! 0f(bviw<cr>',
+    ['n('] = ':normal! f(vi(<cr>',
+    ['n['] = ':normal! f[vi[<cr>',
+    ['n{'] = ':normal! f{vi{<cr>',
+    ['n<'] = ':normal! f<vi<<cr>',
+    ["n'"] = ":normal! f'vi'<cr>",
+    ['n"'] = ':normal! f"vi"<cr>',
+  }
+}
 
--- Cheatsheet
-map("n", "<leader><leader>c", ':Cheatsheet<cr>', opt)
-map("n", "<leader><leader>C", ':CheatsheetEdit<cr>', opt)
-
--- luasnip
-map({ "i", "s" }, "<c-k>", function()
-  if require("luasnip").expand_or_jumpable() then
-    require("luasnip").expand_or_jump()
+-- Unsets all keybindings defined in keymaps
+-- @param keymaps The table of key mappings containing a list per mode (normal_mode, insert_mode, ..)
+function M.clear(keymaps)
+  local builtins = M.get_builtins()
+  for mode, mappings in pairs(keymaps) do
+    local translated_mode = mode_adapters[mode] or mode
+    for key, _ in pairs(mappings) do
+      -- some plugins may override builtins bindings that the user hasn't manually overridden
+      if builtins[mode][key] ~= nil or (builtins[translated_mode] ~= nil and builtins[translated_mode][key] ~= nil) then
+        pcall(vim.keymap.del, translated_mode, key)
+      end
+    end
   end
-end, opt)
-map({ "i", "s" }, "<c-j>", function()
-  if require("luasnip").jumpable(-1) then
-    require("luasnip").jump(-1)
+end
+
+-- Set key mappings individually
+-- @param mode The keymap mode, can be one of the keys of mode_adapters
+-- @param key The key of keymap
+-- @param val Can be form as a mapping or tuple of mapping and user defined opt
+function M.set_keymaps(mode, key, val)
+  local opt = generic_opts[mode] or generic_opts_any
+  if type(val) == "table" then
+    opt = val[2]
+    val = val[1]
   end
-end, opt)
+  if val then
+    vim.keymap.set(mode, key, val, opt)
+  else
+    pcall(vim.api.nvim_del_keymap, mode, key)
+  end
+end
+
+-- Load key mappings for a given mode
+-- @param mode The keymap mode, can be one of the keys of mode_adapters
+-- @param keymaps The list of key mappings
+function M.load_mode(mode, keymaps)
+  mode = mode_adapters[mode] or mode
+  for k, v in pairs(keymaps) do
+    M.set_keymaps(mode, k, v)
+  end
+end
+
+-- Load key mappings for all provided modes
+-- @param keymaps A list of key mappings for each mode
+function M.load(keymaps)
+  keymaps = keymaps or {}
+  for mode, mapping in pairs(keymaps) do
+    M.load_mode(mode, mapping)
+  end
+end
+
+-- Load the builtins keymappings
+function M.load_builtins()
+  M.load(M.get_builtins())
+  M.keys = M.keys or {}
+  for idx, _ in pairs(builtins) do
+    if not M.keys[idx] then
+      M.keys[idx] = {}
+    end
+  end
+end
+
+-- Get the builtins keymappings
+function M.get_builtins()
+  return builtins
+end
+
+M.load_builtins()
+
 
 return M

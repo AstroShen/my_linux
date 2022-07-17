@@ -36,7 +36,10 @@ done
 
 echo "Setup nvim..."
 cp -RfL ${PWD}/nvim/ ${my_home}/.config/nvim
-cp -RfL ${PWD}/nvim_share ${my_home}/.local/share/nvim
+tar zxvf ${my_home}/.config/nvim/lsp_servers.tar.gz -C ${my_home}/.config/nvim/
+tar zxvf ${my_home}/.config/nvim/lua.tar.gz -C ${my_home}/.config/nvim/
+rm ${my_home}/.config/nvim/lua.tar.gz
+rm ${my_home}/.config/nvim/lsp_servers.tar.gz
 
 echo "Setup nnn..."
 cp -RfL ${PWD}/nnn/ ${my_home}/.config/nnn
@@ -53,6 +56,9 @@ cp -RfL ${PWD}/tmux/tmux.conf ${my_home}/.tmux.conf
 
 echo "Setup zsh..."
 cp -RfL ${PWD}/zsh/.zshrc ${PWD}/zsh/.zsh ${my_home}
+
+echo "Setup scripts..."
+cp -RfL ${PWD}/scripts/ ${my_home}
 
 echo "Setup other hiddle files..."
 cp -RfL ${PWD}/.gitconfig ${my_home}/.gitconfig

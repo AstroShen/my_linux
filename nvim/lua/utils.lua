@@ -5,14 +5,10 @@ function M.is_available(plugin)
   return packer_plugins ~= nil and packer_plugins[plugin] ~= nil
 end
 
--- check everymodule is loadable
-function M.check_module(modules)
-  for _, source in ipairs(modules) do
-    local status_ok, fault = pcall(require, source)
-    if not status_ok then
-      error("Failed to load " .. source .. "\n\n" .. fault)
-    end
-  end
+-- check whether plugin is available
+function M.check_plugin(plugin)
+  local available, _ = pcall(require, plugin)
+  return available
 end
 
 return M
