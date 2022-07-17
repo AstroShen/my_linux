@@ -11,7 +11,7 @@ set -Eeuxo pipefail
 rm -rf ./nvim/*
 cp -rf ~/.config/nvim/init.lua ~/.config/nvim/lua/ ~/.config/nvim/after/ ./nvim/
 tar zcvf ./nvim/lsp_servers.tar.gz -C  ~/.config/nvim/ lsp_servers
-tar zcvf ./nvim/lua.tar.gz -C ~/.config/nvim/ lua
+tar zcvf ./nvim/site.tar.gz -C ~/.config/nvim/ site
 echo 'nvim update done!'
 
 # nnn
