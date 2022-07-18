@@ -25,7 +25,7 @@ if check_plugin("telescope") then
     },
     pickers = {
       find_files = {
-        find_command = { "fd", "--type", "f" }, -- linux only option
+        find_command = { "rg", "--files", "--hidden" }, -- linux only option
         hidden = false, -- linux only option
         mappings = {
           n = {
