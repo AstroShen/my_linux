@@ -1,0 +1,127 @@
+" options {{{
+set splitright
+set fillchars=stl:━,vert:\┃
+set pumheight=14
+" search
+set hlsearch                    " highlight searches
+set incsearch                   " do incremental searching, search as you type
+set ignorecase                  " ignore case when searching
+set smartcase                   " no ignorecase if Uppercase char present
+" tab
+set expandtab                   " expand tabs to spaces
+set smarttab
+set shiftround
+set autoindent shiftround
+set shiftwidth=4
+set tabstop=4
+set softtabstop=4                " insert mode tab and backspace use 4 spaces
+
+
+" select & complete
+set completeopt=menu,preview,noinsert,longest
+set mouse=a
+set selection=inclusive
+set selectmode=mouse,key
+
+" others
+set backspace=indent,eol,start  " make that backspace key work the way it should
+set whichwrap+=<,>,h,l
+
+
+" set mark column color
+hi! link SignColumn   LineNr
+hi! link ShowMarksHLl DiffAdd
+hi! link ShowMarksHLu DiffChange
+set laststatus=2
+set statusline=%f%m%r%h%w%=[%{&ff}]%y[%l,%v][%L][%p%%]
+" }}}
+
+" mappings {{{
+let mapleader = " "
+inoremap jj <Esc>
+inoremap <esc> <nop>
+nnoremap ; :
+nnoremap Y y$
+nnoremap <leader>w :update<cr>
+nnoremap <leader>rc :e $MYVIMRC<cr>
+nnoremap <leader>cd :cd %:p:h<cr>:pwd<cr>
+nnoremap <leader>dc :cd -<cr>
+nnoremap <C-u> 8k
+nnoremap <c-d> 8j
+nnoremap <esc><esc> :noh<cr>
+nnoremap qw <c-w>q
+"nnoremap <leader>gi 2g;a
+nnoremap gV `[v`]
+nnoremap p pgV=<cr>
+inoremap <A-e> <C-o>A
+inoremap <A-l> <right>
+inoremap <A-h> <left>
+nnoremap <C-j> <C-W>j
+nnoremap <C-k> <C-W>k
+nnoremap <C-h> <C-W>h
+nnoremap <C-l> <C-W>l
+nnoremap <c-p> <c-w>p
+nnoremap <silent> # #zz
+nnoremap <silent> g* g*zz
+nnoremap <leader>a :argadd <c-r>=fnameescape(expand('%:p:h'))<cr>/*<C-d>
+nnoremap <leader>b :b <C-d>
+nnoremap <leader>g :grep!<space>
+nnoremap <F4> [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
+nnoremap <leader>ev :split $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <leader>e :e **/*
+" add quotes to a word
+nnoremap <leader>" viw<esc>a"<esc>bi"<esc>lel
+" ============================ operator-pending mapping ===========================
+" inside next ()
+onoremap p :<c-u>normal! f(vi(<cr>
+" }}}
+
+" abbreviations {{{
+abbrev @@ shenyuhang@hisilicon.com
+abbrev ccopy Copyright 2022 huawei, all rights reserved.
+" }}}
+
+" autocmds {{{
+augroup comment
+    autocmd!
+    autocmd FileType c,cpp nnoremap <buffer> gc I// <esc>$
+    autocmd FileType python nnoremap <buffer> gc I# <esc>$
+    autocmd FileType vim nnoremap <buffer> gc I" <esc>$
+augroup END
+augroup snippet
+    autocmd!
+    autocmd FileType c,cpp :iabbrev <buffer> re0 return 0;
+augroup END
+augroup general
+    autocmd!
+    " make arrow pointing to the same position as last time modification
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+augroup END
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+augroup quickfix
+    autocmd!
+	autocmd QuickFixCmdPost [^l]* cwindow
+	autocmd QuickFixCmdPost l* lwindow
+augroup END
+" }}}
+
+" grep {{{
+if executable("rg")
+    set grepprg=rg\ -i\ --vimgrep
+    set grepformat=%f:%m,%f:%l:%c:m,%f:%l:%m
+endif
+
+function! Grep(...)
+	return system(join([&grepprg] + [expandcmd(join(a:000, ' '))], ' '))
+endfunction
+
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
+
+cnoreabbrev <expr> grep  (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Grep'  : 'grep'
+cnoreabbrev <expr> lgrep (getcmdtype() ==# ':' && getcmdline() ==# 'lgrep') ? 'LGrep' : 'lgrep'
+" }}}
