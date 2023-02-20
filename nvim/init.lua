@@ -1,148 +1,502 @@
-----------------------------------------
--- Section Packer
-----------------------------------------
--- need to be aligned with the installation path of packer
-vim.opt.packpath:append(vim.fn.stdpath("config") .. "/site")
+--              AstroNvim Configuration Table
+-- All configuration changes should go inside of the table below
 
--- impatient need to be placed at the very top
-local impatient_ok, impatient = pcall(require, "impatient")
-if impatient_ok then
-  impatient.enable_profile()
-end
+-- You can think of a Lua "table" as a dictionary like data structure the
+-- normal format is "key = value". These also handle array like data structures
+-- where a value with no key simply has an implicit numeric key
+local config = {
+        -- Configure AstroNvim updates
+        updater = {
+                remote = "origin", -- remote to use
+                channel = "stable", -- "stable" or "nightly"
+                version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
+                branch = "main", -- branch name (NIGHTLY ONLY)
+                commit = nil, -- commit hash (NIGHTLY ONLY)
+                pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
+                skip_prompts = false, -- skip prompts about breaking changes
+                show_changelog = true, -- show the changelog after performing an update
+                auto_reload = false, -- automatically reload and sync packer after a successful update
+                auto_quit = false, -- automatically quit the current session after a successful update
+                -- remotes = { -- easily add new remotes to track
+                --   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
+                --   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
+                --   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
+                -- },
+        },
+        -- Set colorscheme to use
+        colorscheme = "default_theme",
+        -- Add highlight groups in any theme
+        highlights = {
+                -- init = { -- this table overrides highlights in all themes
+                --   Normal = { bg = "#000000" },
+                -- }
+                -- duskfox = { -- a table of overrides/changes to the duskfox theme
+                --   Normal = { bg = "#000000" },
+                -- },
+        },
+        -- set vim options here (vim.<first_key>.<second_key> = value)
+        options = {
+                opt = {
+                        -- set to true or false etc.
+                        relativenumber = true, -- sets vim.opt.relativenumber
+                        number = true, -- sets vim.opt.number
+                        spell = false, -- sets vim.opt.spell
+                        signcolumn = "auto", -- sets vim.opt.signcolumn to auto
+                        wrap = false, -- sets vim.opt.wrap
+                        autoread = true, -- auto reload buffer when changed on disk
+                },
+                g = {
+                        mapleader = " ", -- sets vim.g.mapleader
+                        autoformat_enabled = true, -- enable or disable auto formatting at start (lsp.formatting.format_on_save must be enabled)
+                        cmp_enabled = true, -- enable completion at start
+                        autopairs_enabled = true, -- enable autopairs at start
+                        diagnostics_enabled = true, -- enable diagnostics at start
+                        status_diagnostics_enabled = true, -- enable diagnostics in statusline
+                        icons_enabled = true, -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
+                        ui_notifications_enabled = true, -- disable notifications when toggling UI elements
+                        heirline_bufferline = false, -- enable new heirline based bufferline (requires :PackerSync after changing)
+                        -- asyncrun_open = 6,
+                },
+        },
+        -- If you need more control, you can use the function()...end notation
+        -- options = function(local_vim)
+        --   local_vim.opt.relativenumber = true
+        --   local_vim.g.mapleader = " "
+        --   local_vim.opt.whichwrap = vim.opt.whichwrap - { 'b', 's' } -- removing option from list
+        --   local_vim.opt.shortmess = vim.opt.shortmess + { I = true } -- add to option list
+        --
+        --   return local_vim
+        -- end,
 
-local fn = vim.fn
-local install_path = fn.stdpath('config') .. '/site/pack/packer/start/packer.nvim'
-if fn.empty(fn.glob(install_path)) > 0 then
-  print "Installing packer close and reopen neovim..."
-  packer_bootstrap = fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path })
-end
+        -- Set dashboard header
+        header = {
+                " █████  ███████ ████████ ██████   ██████",
+                "██   ██ ██         ██    ██   ██ ██    ██",
+                "███████ ███████    ██    ██████  ██    ██",
+                "██   ██      ██    ██    ██   ██ ██    ██",
+                "██   ██ ███████    ██    ██   ██  ██████",
+                " ",
+                "    ███    ██ ██    ██ ██ ███    ███",
+                "    ████   ██ ██    ██ ██ ████  ████",
+                "    ██ ██  ██ ██    ██ ██ ██ ████ ██",
+                "    ██  ██ ██  ██  ██  ██ ██  ██  ██",
+                "    ██   ████   ████   ██ ██      ██",
+        },
+        -- Default theme configuration
+        default_theme = {
+                -- Modify the color palette for the default theme
+                colors = {
+                        fg = "#abb2bf",
+                        bg = "#1e222a",
+                },
+                highlights = function(hl) -- or a function that returns a new table of colors to set
+                        local C = require "default_theme.colors"
 
--- Use a protected call so we don't error out on first use
-status_ok, packer = pcall(require, 'packer')
-if not status_ok then
-  print "Packer not successfully loaded!"
-else
-  vim.cmd [[packadd packer.nvim]]
-  local plugins = {
-    { 'lewis6991/impatient.nvim' },
-    -- Packer can manage itself
-    { 'wbthomason/packer.nvim' },
+                        hl.Normal = { fg = C.fg, bg = C.bg }
 
-    -- utils function api
-    { 'nvim-lua/plenary.nvim' },
-    { 'nvim-lua/popup.nvim' },
+                        -- New approach instead of diagnostic_style
+                        hl.DiagnosticError.italic = true
+                        hl.DiagnosticHint.italic = true
+                        hl.DiagnosticInfo.italic = true
+                        hl.DiagnosticWarn.italic = true
 
-    -- LSP support
-    { 'williamboman/nvim-lsp-installer' },
-    { 'neovim/nvim-lspconfig' },
-    { 'onsails/lspkind-nvim' },
-    { 'stevearc/aerial.nvim' },
-    { 'folke/trouble.nvim' },
-    { 'RRethy/vim-illuminate' },
-    { 'ray-x/lsp_signature.nvim' },
-    { 'ray-x/navigator.lua',
-      requires = {
-        { 'ray-x/guihua.lua', run = 'cd lua/fzy && make' },
-        { 'neovim/nvim-lspconfig' },
-      },
-    },
+                        return hl
+                end,
+                -- enable or disable highlighting for extra plugins
+                plugins = {
+                        aerial = true,
+                        beacon = false,
+                        bufferline = true,
+                        cmp = true,
+                        dashboard = true,
+                        highlighturl = true,
+                        hop = false,
+                        indent_blankline = true,
+                        lightspeed = false,
+                        ["neo-tree"] = true,
+                        notify = true,
+                        ["nvim-tree"] = false,
+                        ["nvim-web-devicons"] = true,
+                        rainbow = true,
+                        symbols_outline = false,
+                        telescope = true,
+                        treesitter = true,
+                        vimwiki = false,
+                        ["which-key"] = true,
+                },
+        },
+        -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
+        diagnostics = {
+                virtual_text = false,
+                underline = true,
+        },
+        -- Extend LSP configuration
+        lsp = {
+                -- enable servers that you already have installed without mason
+                servers = {
+                        -- "pyright"
+                },
+                formatting = {
+                        -- control auto formatting on save
+                        format_on_save = {
+                                enabled = true, -- enable or disable format on save globally
+                                allow_filetypes = { -- enable format on save for specified filetypes only
+                                        -- "go",
+                                },
+                                ignore_filetypes = { -- disable format on save for specified filetypes
+                                        -- "python",
+                                },
+                        },
+                        disabled = { -- disable formatting capabilities for the listed language servers
+                                -- "sumneko_lua",
+                        },
+                        timeout_ms = 1000, -- default format timeout
+                        -- filter = function(client) -- fully override the default formatting function
+                        --   return true
+                        -- end
+                },
+                -- easily add or disable built in mappings added during LSP attaching
+                mappings = {
+                        n = {
+                                -- ["<leader>lf"] = false -- disable formatting keymap
+                        },
+                },
+                -- add to the global LSP on_attach function
+                -- on_attach = function(client, bufnr)
+                -- end,
 
-    -- completion
-    { 'hrsh7th/cmp-nvim-lsp' },
-    { 'hrsh7th/cmp-buffer' },
-    { 'hrsh7th/cmp-path' },
-    { 'hrsh7th/cmp-cmdline' },
-    { 'hrsh7th/nvim-cmp' },
-    { 'hrsh7th/cmp-calc' },
-    { 'hrsh7th/cmp-nvim-lua' },
-    { 'dcampos/cmp-snippy' },
-    { "L3MON4D3/LuaSnip" },
-    { "saadparwaiz1/cmp_luasnip" },
-    { "rafamadriz/friendly-snippets" },
+                -- override the mason server-registration function
+                -- server_registration = function(server, opts)
+                --   require("lspconfig")[server].setup(opts)
+                -- end,
 
-    -- treesitter
-    { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' },
-    { 'nvim-treesitter/nvim-treesitter-textobjects' },
-    { 'romgrk/nvim-treesitter-context' },
-    { 'nvim-treesitter/nvim-treesitter-refactor' },
+                -- Add overrides for LSP server settings, the keys are the name of the server
+                ["server-settings"] = {
+                        -- example for addings schemas to yamlls
+                        -- yamlls = { -- override table for require("lspconfig").yamlls.setup({...})
+                        --   settings = {
+                        --     yaml = {
+                        --       schemas = {
+                        --         ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
+                        --         ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
+                        --         ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
+                        --       },
+                        --     },
+                        --   },
+                        -- },
+                },
+        },
+        -- Mapping data with "desc" stored directly by vim.keymap.set().
+        --
+        -- Please use this mappings table to set keyboard mapping since this is the
+        -- lower level configuration and more robust one. (which-key will
+        -- automatically pick-up stored data by this setting.)
+        mappings = {
+                -- first key is the mode
+                n = {
+                        -- second key is the lefthand side of the map
+                        -- mappings seen under group name "Buffer"
+                        [";"] = { ":", desc = "enter command mode" },
+                        ["qw"] = { "<C-w>q", desc = "close window" },
+                        ["<leader>w"] = { ":update<cr>", desc = "update file" },
+                        ["]c"] = { ":cnext<cr>", desc = "next quickfix item" },
+                        ["[c"] = { ":cprevious<cr>", desc = "previous quickfix item" },
 
-    -- Fuzzy finder
-    { 'nvim-telescope/telescope.nvim' },
-    { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' },
+                },
+                t = {
+                        -- setting a mapping to false will disable it
+                        -- ["<esc>"] = false,
+                },
+        },
+        -- Configure plugins
+        plugins = {
+                init = {
+                        -- You can disable default plugins as follows:
+                        -- ["goolord/alpha-nvim"] = { disable = true },
 
-    -- UI
-    { 'navarasu/onedark.nvim' },
-    { 'kyazdani42/nvim-web-devicons' },
-    { 'nvim-lualine/lualine.nvim' },
-    { 'kyazdani42/nvim-tree.lua' },
-    { 'romgrk/barbar.nvim' },
-    { 'lukas-reineke/indent-blankline.nvim', },
-    { "mcchrish/nnn.vim", },
+                        -- You can also add new plugins here as well:
+                        -- Add plugins, the packer syntax without the "use"
+                        -- { "andweeb/presence.nvim" },
+                        -- {
+                        --   "ray-x/lsp_signature.nvim",
+                        --   event = "BufRead",
+                        --   config = function()
+                        --     require("lsp_signature").setup()
+                        --   end,
+                        -- },
+                        {
+                                'skywind3000/asynctasks.vim',
+                                requires = 'skywind3000/asyncrun.vim',
+                                config = function()
+                                end
+                        }
+                        -- We also support a key value style plugin definition similar to NvChad:
+                        -- ["ray-x/lsp_signature.nvim"] = {
+                        --   event = "BufRead",
+                        --   config = function()
+                        --     require("lsp_signature").setup()
+                        --   end,
+                        -- },
+                },
+                -- All other entries override the require("<key>").setup({...}) call for default plugins
+                ["null-ls"] = function(config) -- overrides `require("null-ls").setup(config)`
+                        -- config variable is the default configuration table for the setup function call
+                        -- local null_ls = require "null-ls"
 
-    -- Edit
-    { 'numToStr/Comment.nvim', },
-    { 'windwp/nvim-autopairs' },
-    { 'machakann/vim-sandwich' },
+                        -- Check supported formatters and linters
+                        -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
+                        -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
+                        config.sources = {
+                                -- Set a formatter
+                                -- null_ls.builtins.formatting.stylua,
+                                -- null_ls.builtins.formatting.prettier,
+                        }
+                        return config -- return final config table
+                end,
+                treesitter = { -- overrides `require("treesitter").setup(...)`
+                        disable = true,
+                        ensure_installed = { "c", "cpp" },
+                },
+                -- use mason-lspconfig to configure LSP installations
+                ["mason-lspconfig"] = { -- overrides `require("mason-lspconfig").setup(...)`
+                        ensure_installed = { "sumneko_lua", "clangd" },
+                },
+                -- use mason-null-ls to configure Formatters/Linter installation for null-ls sources
+                ["mason-null-ls"] = { -- overrides `require("mason-null-ls").setup(...)`
+                        -- ensure_installed = { "prettier", "stylua" },
+                },
+                ["mason-nvim-dap"] = { -- overrides `require("mason-nvim-dap").setup(...)`
+                        -- ensure_installed = { "python" },
+                },
+        },
+        -- LuaSnip Options
+        luasnip = {
+                -- Extend filetypes
+                filetype_extend = {
+                        -- javascript = { "javascriptreact" },
+                },
+                -- Configure luasnip loaders (vscode, lua, and/or snipmate)
+                vscode = {
+                        -- Add paths for including more VS Code style snippets in luasnip
+                        paths = {},
+                },
+        },
+        -- CMP Source Priorities
+        -- modify here the priorities of default cmp sources
+        -- higher value == higher priority
+        -- The value can also be set to a boolean for disabling default sources:
+        -- false == disabled
+        -- true == 1000
+        cmp = {
+                source_priority = {
+                        nvim_lsp = 1000,
+                        luasnip = 750,
+                        buffer = 500,
+                        path = 250,
+                },
+        },
+        -- Customize Heirline options
+        heirline = {
+                -- -- Customize different separators between sections
+                -- separators = {
+                --   tab = { "", "" },
+                -- },
+                -- -- Customize colors for each element each element has a `_fg` and a `_bg`
+                -- colors = function(colors)
+                --   colors.git_branch_fg = astronvim.get_hlgroup "Conditional"
+                --   return colors
+                -- end,
+                -- -- Customize attributes of highlighting in Heirline components
+                -- attributes = {
+                --   -- styling choices for each heirline element, check possible attributes with `:h attr-list`
+                --   git_branch = { bold = true }, -- bold the git branch statusline component
+                -- },
+                -- -- Customize if icons should be highlighted
+                -- icon_highlights = {
+                --   breadcrumbs = false, -- LSP symbols in the breadcrumbs
+                --   file_icon = {
+                --     winbar = false, -- Filetype icon in the winbar inactive windows
+                --     statusline = true, -- Filetype icon in the statusline
+                --   },
+                -- },
+        },
+        -- Modify which-key registration (Use this with mappings table in the above.)
+        ["which-key"] = {
+                -- Add bindings which show up as group name
+                register = {
+                        -- first key is the mode, n == normal mode
+                        n = {
+                                -- second key is the prefix, <leader> prefixes
+                                ["<leader>"] = {
+                                        -- third key is the key to bring up next level and its displayed
+                                        -- group name in which-key top level menu
+                                        ["b"] = { name = "Buffer" },
+                                },
+                        },
+                },
+        },
+        -- This function is run last and is a good place to configuring
+        -- augroups/autocommands and custom filetypes also this just pure lua so
+        -- anything that doesn't fit in the normal config locations above can go here
+        polish = function()
+                -- Set up custom filetypes
+                -- vim.filetype.add {
+                --   extension = {
+                --     foo = "fooscript",
+                --   },
+                --   filename = {
+                --     ["Foofile"] = "fooscript",
+                --   },
+                --   pattern = {
+                --     ["~/%.config/foo/.*"] = "fooscript",
+                --   },
+                -- }
+                --
+                -- Set up autocommands
+                local create_autocmd = vim.api.nvim_create_autocmd
 
-    -- work_flow
-    { "akinsho/toggleterm.nvim", },
-    { "aserowy/tmux.nvim", },
-    { 'sakhnik/nvim-gdb', run = './install.sh' },
-    { 'sudormrfbin/cheatsheet.nvim' },
+                Au_group = {
+                        cpp = vim.api.nvim_create_augroup("cpp_group", { clear = true }),
+                        python = vim.api.nvim_create_augroup("python_group", { clear = true }),
+                        general = vim.api.nvim_create_augroup("general", { clear = true }),
+                        makePrg = vim.api.nvim_create_augroup("makePrg", { clear = true }),
+                }
 
-    -- utility
-    { 'folke/which-key.nvim', },
-    { 'rmagatti/auto-session', },
-    { 'winston0410/cmd-parser.nvim' },
-    { 'winston0410/range-highlight.nvim', },
-    { 'mbbill/undotree' },
-    { 'monaqa/dial.nvim' },
-    { 'norcalli/nvim-colorizer.lua', },
-    { 'xiyaowong/accelerated-jk.nvim' },
-    { "folke/todo-comments.nvim" },
-    { 'edluffy/specs.nvim' },
-    { 'rcarriga/nvim-notify' },
-    { "ahmedkhalf/project.nvim" },
+                local definitions = {
+                        {
+                                'BufEnter',
+                                {
+                                        pattern = "*.cpp",
+                                        command = "setlocal makeprg=g++\\ -std=c++11\\ -g\\ -Wall\\ %:p\\ -o\\ %:p:r",
+                                        group = Au_group.makePrg,
+                                        desc = "make cpp programs"
+                                }
+                        },
+                        {
+                                { "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" },
+                                {
+                                        command = "if mode() != 'c' | checktime | endif",
+                                        pattern = { "*" },
+                                        desc = "make autoread take effect"
+                                }
+                        },
+                        {
+                                'BufEnter',
+                                {
+                                        pattern = { "*.py", "*.sh", "*.csh", "*.pl", "*.lua" },
+                                        command = "setlocal makeprg=%:p",
+                                        group = Au_group.makePrg,
+                                        desc = "run scripts programs"
+                                }
+                        },
+                        {
+                                "BufWritePost",
+                                {
+                                        pattern = "init.lua",
+                                        command = "source <afile> | PackerCompile",
+                                        group = Au_group.general,
+                                        desc = "Automatically reloads init.lua file when wirte",
+                                },
+                        },
+                        {
+                                "BufReadPost",
+                                {
+                                        command = [[if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif]],
+                                        group = Au_group.general,
+                                        desc = "Restore the cursor position when opening a file",
+                                }
+                        },
+                        {
+                                'QuickFixCmdPost',
+                                {
+                                        pattern = "[^l]*",
+                                        nested = true,
+                                        command = "cwindow",
+                                        group = Au_group.general,
+                                        desc = "automatically open quickfix window",
+                                }
+                        },
+                        {
+                                'QuickFixCmdPost',
+                                {
+                                        pattern = "l*",
+                                        nested = true,
+                                        command = "lwindow",
+                                        group = Au_group.general,
+                                        desc = "automatically open quickfix window",
+                                }
+                        },
+                        {
+                                'BufWritePost',
+                                {
+                                        pattern = { "*.py", "*.pl", "*.csh", "*.tcsh", "*.sh" },
+                                        callback = function()
+                                                local first_line = vim.api.nvim_buf_get_lines(0, 0, 1, true)[1]
+                                                if string.match(first_line, "^#!") then
+                                                        vim.api.nvim_command("silent !chmod +x <afile>")
+                                                end
+                                        end,
+                                        group = Au_group.general,
+                                        desc = "add execution rights to script files such as *sh, *.py, etc after :w",
+                                }
+                        },
+                        {
+                                "Filetype",
+                                {
+                                        pattern = { "c", "cpp" },
+                                        command = "setlocal tabstop=2 shiftwidth=2",
+                                        group = Au_group.cpp,
+                                }
+                        },
+                        {
+                                "Filetype",
+                                {
+                                        pattern = "python",
+                                        command = "setlocal tabstop=4 shiftwidth=4",
+                                        group = Au_group.python,
+                                }
+                        },
+                        {
+                                'TextYankPost',
+                                {
+                                        pattern = '*',
+                                        callback = function() vim.highlight.on_yank { timeout = 500 } end,
+                                        group = Au_group.general,
+                                        desc = "highlight yanks",
+                                }
+                        },
+                        {
+                                'BufWritePre',
+                                {
+                                        pattern = '*',
+                                        command = 'call mkdir(expand("<afile>:p:h"), "p")',
+                                        group = Au_group.general,
+                                        desc = "create non-exist directory when saving files",
+                                }
+                        },
+                        {
+                                'User',
+                                {
+                                        pattern = 'AsyncRunStop',
+                                        command = 'bot copen',
+                                        group = Au_group.general,
+                                        desc = "create non-exist directory when saving files",
+                                }
+                        },
+                }
 
-    -- git
-    { 'rhysd/conflict-marker.vim' },
-    { 'lewis6991/gitsigns.nvim', },
-    { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' },
-  }
+                for _, entry in ipairs(definitions) do
+                        local event = entry[1]
+                        local opts = entry[2]
+                        if type(opts.group) == "string" and opts.group ~= "" then
+                                local exists, _ = pcall(vim.api.nvim_get_autocmds, { group = opts.group })
+                                if not exists then
+                                        vim.api.nvim_create_augroup(opts.group, {})
+                                end
+                        end
+                        vim.api.nvim_create_autocmd(event, opts)
+                end
+        end,
+}
 
-  packer.init {
-    package_root = vim.fn.stdpath('config') .. '/site' .. '/pack',
-    display = {
-      open_fn = function()
-        return require("packer.util").float { border = "single" }
-      end,
-      prompt_border = "single",
-    },
-    auto_clean = true,
-    profile = {
-      enable = true,
-      threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
-    }
-  }
-
-  packer.reset()
-  packer.startup(function(use)
-    for _, v in pairs(plugins) do
-      use(v)
-    end
-    -- Automatically set up your configuration after cloning packer.nvim
-    -- Put this at the end after all plugins
-    if PACKER_BOOTSTRAP then
-      require("packer").sync()
-    end
-  end)
-end
-
-----------------------------------------
--- Load modules
-----------------------------------------
-require("options")
-require("plugins")
-require("mappings")
-require("plugins_mappings")
-require("autocmds")
+return config

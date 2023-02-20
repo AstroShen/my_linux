@@ -1,70 +1,91 @@
-{
-    "explorer.confirmDelete": false,
-    "leetcode.endpoint": "leetcode-cn",
-    "leetcode.workspaceFolder": "c:\\Users\\沈宇航\\Desktop\\Leetcode",
-    "leetcode.hint.commandShortcut": false,
-    "leetcode.defaultLanguage": "cpp",
-    "leetcode.hint.configWebviewMarkdown": false,
-    "C_Cpp.autocompleteAddParentheses": true,
-
-    
-
-    // general config
-    "workbench.iconTheme" : "vscode-icons",
-    "editor.fontSize": 16,
-    "editor.lineNumbers": "relative",
-    "files.autoSave": "off",
-    "workbench.colorTheme": "One Dark Pro",
-    "window.zoomLevel": 2,
-    "editor.formatOnPaste": true,
-    "editor.minimap.enabled": false,
-    "editor.suggest.localityBonus": true,
-    "cmake.configureOnOpen": false,
-    "security.workspace.trust.untrustedFiles": "open",
-    "editor.suggest.preview": true,
-    "editor.suggestSelection": "recentlyUsed",
-    "search.exclude": {
-        "**/logs": true,
+[
+    // quick navigate in insert mode
+    {
+        "key": "ctrl+e",
+        "command": "cursorLineEnd",
+        "when": "textInputFocus"
     },
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
+    {
+        "key": "ctrl+l",
+        "command": "cursorRight",
+        "when": "textInputFocus"
     },
-    // vimrc
-    "vim.disableExtension": false,
-    "vim.incsearch": true,
-    "vim.useSystemClipboard": true,
-    "vim.useCtrlKeys": true,
-    "vim.hlsearch": true,
-    "vim.highlightedyank.enable": true,
-    "vim.visualstar": true,
-    "vim.textwidth": 140,
-    "vim.leader": "<space>",
-
-    "vim.insertModeKeyBindings": [
-        { "before": [ "j", "j" ], "after": [ "<Esc>" ] },
-    ],
-    "vim.normalModeKeyBindingsNonRecursive": [
-        { "before": [ ";"], "after": [ ":"] },
-        { "before": [ "<leader>", "w" ], "commands": [ ":w" ] },
-        { "before": [ "<C-h>"], "after": [ "<C-w>", "h" ] },
-        { "before": [ "<C-l>"], "after": [ "<C-w>", "l" ] },
-        { "before": [ "<C-j>"], "after": [ "<C-w>", "j" ] },
-        { "before": [ "<C-k>"], "after": [ "<C-w>", "k" ] },
-        { "before": [ "q", "w"], "after": [ "<C-w>", "q" ] },
-        { "before": [ "<esc>", "<esc>" ], "commands": [ ":nohl", ] },
-        { "before": [ "leader", "g", "i" ], "after": [ "2", "g", ";", "a"] },
-        { "before": [ "g", "r" ], "commands": ["editor.action.referenceSearch.trigger" ] },
-        { "before": [ "g", "d" ], "commands": ["editor.action.peekDefinition"]  },
-        { "before": [ "g", "D" ], "commands": ["editor.action.revealDefinition"]  },
-    ],
-    "vim.visualModeKeyBindings": [
-        { "before": [ ">" ], "commands": [ "editor.action.indentLines" ] }, 
-        { "before": [ "<" ], "commands": [ "editor.action.outdentLines" ] },
-    ],
-    "vim.handleKeys": {
-        "<C-t>": false,
-        "<C-f>": false,
-        "<C-b>": false,
+    // use tab to select popup menu item
+    {
+        "key": "tab",
+        "command": "acceptSelectedSuggestion",
+        "when": "suggestWidgetVisible && textInputFocus"
     },
-}
+    {
+        "key": "shift+tab",
+        "command": "acceptSelectedSuggestion",
+        "when": "suggestWidgetVisible && textInputFocus"
+    },
+    // use ctrl j k to navigate
+    {
+        "key": "ctrl+j",
+        "command": "selectNextSuggestion",
+        "when": "editorTextFocus && suggestWidgetMultipleSuggestions && suggestWidgetVisible"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "selectPrevSuggestion",
+        "when": "editorTextFocus && suggestWidgetMultipleSuggestions && suggestWidgetVisible"
+    },
+    {
+        "key": "ctrl+j",
+        "command": "workbench.action.quickOpenSelectNext",
+        "when": "inQuickOpen"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "workbench.action.quickOpenSelectPrevious",
+        "when": "inQuickOpen"
+    },
+    // L to open next editor
+    {
+        "key": "shift+l",
+        "command": "workbench.action.nextEditor",
+        "when": "vim.mode == 'Normal'"
+    },
+    {
+        "key": "ctrl+pagedown",
+        "command": "-workbench.action.nextEditor"
+    },
+    // H to open previous editor
+    {
+        "key": "shift+h",
+        "command": "workbench.action.previousEditor",
+        "when": "vim.mode == 'Normal'"
+    },
+    {
+        "key": "ctrl+pageup",
+        "command": "-workbench.action.previousEditor"
+    },
+    // navigate back and forth
+    {
+        "key": "ctrl+o",
+        "command": "workbench.action.navigateBack",
+        "when": "canNavigateBack"
+    },
+    {
+        "key": "alt+left",
+        "command": "-workbench.action.navigateBack",
+        "when": "canNavigateBack"
+    },
+    {
+        "key": "ctrl+i",
+        "command": "workbench.action.navigateForward",
+        "when": "canNavigateForward"
+    },
+    {
+        "key": "alt+right",
+        "command": "-workbench.action.navigateForward",
+        "when": "canNavigateForward"
+    },
+    {
+        "key": "space t",
+        "command": "workbench.action.terminal.toggleTerminal",
+        "when": "terminal.active"
+    },
+]
